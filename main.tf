@@ -1,6 +1,6 @@
 // S3 bucket
 data "template_file" "bucket-policy" {
-  template = "${path.module}/policies/bucket-policy.tpl"
+  template = file("${path.module}/policies/bucket-policy.tpl")
   vars = {
     cloudfront_identity = aws_cloudfront_origin_access_identity.origin_access_identity.id
     bucket_id = var.s3-bucket-name
@@ -106,7 +106,7 @@ data "aws_caller_identity" "deployment" {
 }
 
 data "template_file" "iam-policy" {
-  template = "${path.module}/policies/allow-deployment.tpl"
+  template = file("${path.module}/policies/allow-deployment.tpl")
   vars = {
     bucket_name = var.s3-bucket-name
     account_id = data.aws_caller_identity.deployment[0].account_id
