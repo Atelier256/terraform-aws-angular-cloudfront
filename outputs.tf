@@ -1,13 +1,13 @@
 output "cloudfront-distribution-id" {
-  value = aws_cloudfront_distribution.front-end.id
+  value = aws_cloudfront_distribution.distribution.id
 }
 
 output "cloudfront-distribution-arn" {
-  value = aws_cloudfront_distribution.front-end.arn
+  value = aws_cloudfront_distribution.distribution.arn
 }
 
 output "cloudfront-distribution-domain-name" {
-  value = aws_cloudfront_distribution.front-end.domain_name
+  value = aws_cloudfront_distribution.distribution.domain_name
 }
 
 output "aws_secret_access_key_deployment_user" {
