@@ -7,7 +7,7 @@ data "template_file" "bucket-policy" {
   }
 }
 
-resource "aws_s3_bucket" "front-end" {
+resource "aws_s3_bucket" "cloudfront" {
   bucket = var.s3-bucket-name
   acl = "private"
   server_side_encryption_configuration {
@@ -21,8 +21,8 @@ resource "aws_s3_bucket" "front-end" {
   tags = var.s3-tags
 }
 
-resource "aws_s3_bucket_public_access_block" "front-end" {
-  bucket = aws_s3_bucket.front-end.id
+resource "aws_s3_bucket_public_access_block" "cloudfront" {
+  bucket = aws_s3_bucket.cloudfront.id
   block_public_acls = true
   block_public_policy = true
   restrict_public_buckets = true
@@ -34,7 +34,7 @@ resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
   comment = var.access-identity-comment
 }
 
-resource "aws_cloudfront_distribution" "front-end" {
+resource "aws_cloudfront_distribution" "distribution" {
   enabled = true
   comment = var.distribution-comment
   price_class = var.price_class
@@ -42,8 +42,8 @@ resource "aws_cloudfront_distribution" "front-end" {
   http_version = var.http_version
   default_root_object = var.default_root_object
   origin {
-    domain_name = aws_s3_bucket.front-end.bucket_regional_domain_name
-    origin_id = "S3-${aws_s3_bucket.front-end.arn}"
+    domain_name = aws_s3_bucket.cloudfront.bucket_regional_domain_name
+    origin_id = "S3-${aws_s3_bucket.cloudfront.arn}"
     s3_origin_config {
       origin_access_identity = aws_cloudfront_origin_access_identity.origin_access_identity.cloudfront_access_identity_path
     }
@@ -59,7 +59,7 @@ resource "aws_cloudfront_distribution" "front-end" {
       "HEAD",
       "OPTIONS"
     ]
-    target_origin_id = "S3-${aws_s3_bucket.front-end.arn}"
+    target_origin_id = "S3-${aws_s3_bucket.cloudfront.arn}"
     viewer_protocol_policy = var.viewer_protocol_policy
     min_ttl = 0
     default_ttl = 3600
@@ -110,7 +110,7 @@ data "template_file" "iam-policy" {
   vars = {
     bucket_name = var.s3-bucket-name
     account_id = data.aws_caller_identity.deployment[0].account_id
-    distribution_id = aws_cloudfront_distribution.front-end.id
+    distribution_id = aws_cloudfront_distribution.distribution.id
   }
 }
 
